@@ -6,6 +6,9 @@ import { environment } from './environments/environment';
 
 import 'hammerjs';
 
+import 'echarts/dist/echarts';
+import 'echarts-gl/dist/echarts-gl';
+
 if (environment.production) {
   enableProdMode();
 }
