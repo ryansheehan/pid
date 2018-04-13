@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
@@ -12,16 +13,19 @@ import {
 } from '@angular/material';
 
 import { AppComponent } from './app.component';
-import { ChartBasicComponent } from './chart-basic/chart-basic.component';
+import { SettingsFormComponent } from './settings-form/settings-form.component';
+import { EmitterService } from './emitter.service';
+import { PidService } from './pid.service';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    ChartBasicComponent
+    SettingsFormComponent,
   ],
   imports: [
     BrowserModule,
+    ReactiveFormsModule,
     FlexLayoutModule,
     BrowserAnimationsModule,
     MatButtonModule,
@@ -31,7 +35,7 @@ import { ChartBasicComponent } from './chart-basic/chart-basic.component';
     MatInputModule,
     MatFormFieldModule
   ],
-  providers: [],
+  providers: [EmitterService, PidService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

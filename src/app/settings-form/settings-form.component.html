@@ -1,0 +1,17 @@
+<div class="settings-form-container">
+  <form [formGroup]="settingsForm">
+    <div class="settings-form-controls" fxLayout="column" fxLayoutAlign="start start">
+      <!-- <button mat-raised-button color="primary" fxFlexAlign="center">Calculate</button> -->
+      <h3>Start</h3>
+      <mat-slider formControlName="start" thumbLabel="true" tickInterval="auto">Start</mat-slider>
+      <h3>Target</h3>
+      <mat-slider formControlName="target" thumbLabel="true" tickInterval="auto">Target</mat-slider>
+      <h3>Proportional</h3>
+      <mat-slider formControlName="proportional" thumbLabel="true" tickInterval="auto">Target</mat-slider>
+      <h3>Integral</h3>
+      <mat-slider formControlName="integral" thumbLabel="true" tickInterval="auto">Target</mat-slider>
+      <h3>Derivative</h3>
+      <mat-slider formControlName="derivative" thumbLabel="true" tickInterval="auto">Target</mat-slider>
+    </div>
+  </form>
+</div>
