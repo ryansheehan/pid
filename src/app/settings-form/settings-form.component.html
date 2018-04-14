@@ -2,8 +2,7 @@
   <form [formGroup]="settingsForm">
     <div class="settings-form-controls" fxLayout="column" fxLayoutAlign="start start">
       <!-- <button mat-raised-button color="primary" fxFlexAlign="center">Calculate</button> -->
-      <h3>Start</h3>
-      <mat-slider formControlName="start" thumbLabel="true" tickInterval="auto">Start</mat-slider>
+      <div>{{currentValue}}</div>
       <h3>Target</h3>
       <mat-slider formControlName="target" thumbLabel="true" tickInterval="auto">Target</mat-slider>
       <h3>Proportional</h3>

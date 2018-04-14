@@ -13,7 +13,6 @@ import {
 export class AppComponent {
   title = 'PID';
 
-  constructor(emitter: EmitterService) {
-    emitter.currentPoints.pipe(take(30)).subscribe(v => console.log(v));
+  constructor() {
   }
 }

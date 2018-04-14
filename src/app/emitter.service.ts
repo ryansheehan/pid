@@ -4,10 +4,9 @@ import { Observable } from 'rxjs/Observable';
 import { Scheduler } from 'rxjs/Scheduler';
 import { animationFrame } from 'rxjs/scheduler/animationFrame';
 
-import { PidService } from './pid.service';
-
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/observable/zip';
+import 'rxjs/add/observable/of';
 import {
   scan,
   combineLatest,
@@ -18,9 +17,12 @@ import {
   take,
   skip,
   publishBehavior,
+  publish,
   sample,
+  sampleTime,
   repeatWhen,
   first,
+  filter,
   mergeMap,
   zip,
   startWith,
@@ -51,8 +53,9 @@ export class EmitterService {
     map(v => v.interval)
   );
 
-  private _time_total_ms = this._animFrame.pipe(
-    scan((acc: number, value: number) => acc + value, 0),
+  private _time_now = this._animFrame.pipe(
+    map(v => Date.now())
+    // scan((acc: number, value: number) => acc + value, 0),
     // publishBehavior(0)
   );
 
@@ -61,13 +64,14 @@ export class EmitterService {
   );
 
   private _pidInput = new BehaviorSubject<IPid>({ps: 0, is: 0, ds: 0});
-  private _targetInput = new BehaviorSubject(0);
+  targetInput = new BehaviorSubject(0);
   private _currentInput = new BehaviorSubject(0);
   private _inputs = this._deltaTime.pipe(
+    filter(v => v > 0.001),
     mergeMap(v => Observable.zip(
       Observable.of(v),
       this._pidInput.pipe(first()),
-      this._targetInput.pipe(first()),
+      this.targetInput.pipe(first()),
       this._currentInput.pipe(first()),
       (dt, pid, target, current) => ({dt, pid, target, current})
     ))
@@ -103,18 +107,27 @@ export class EmitterService {
 
       return ps * error + is * acc + ds * delta;
     }
-  ).subscribe(result => this._currentInput.next(result));
+  );
 
-  targetPoints = this._time_total_ms.pipe(
+  targetPoints = this._time_now.pipe(
     zip(this._inputs.pipe(map(v => v.target)), (time, data) => ({ time, data })),
   );
 
-  currentPoints = this._time_total_ms.pipe(
-    zip(this._inputs.pipe(map(v => v.current)), (time, data) => ({ time, data })),
+  currentPoints = this._time_now.pipe(
+    zip(this._calculate, (time, data) => ({ time, data })),
   );
 
-  constructor(private pid: PidService) {
+  test = this._deltaTime.pipe(
+    filter(v => v > 0.001),
+    mergeMap(v => this._currentInput.pipe(first()))
+  );
 
+  constructor() {
+    this._inputs.pipe(
+      take(10)
+    ).subscribe(value => console.log(value));
+
+    this._calculate.subscribe(result => this._currentInput.next(result));
   }
 
   public setPid(pid: IPid) {
@@ -122,6 +135,28 @@ export class EmitterService {
   }
 
   public setTarget(value: number) {
-    this._targetInput.next(value);
+    this.targetInput.next(value);
   }
 }
+
+/*
+calculate(start: number,
+            target: number,
+            proportionalsScalar: number,
+            integralScalar: number,
+            derivativeScalar: number,
+            lastError: number,
+            totalError: number,
+            deltaTime: number): {value: number, error: number, totalError: number} {
+
+  const error = target - start;
+  totalError += error * deltaTime;
+  const deltaError = (error - lastError) / deltaTime;
+  const p = proportionalsScalar * error;
+  const i = integralScalar * totalError;
+  const d = derivativeScalar * deltaError;
+  const value = p + i + d;
+
+  return { value, error, totalError};
+}
+*/

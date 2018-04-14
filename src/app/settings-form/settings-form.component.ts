@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { EmitterService } from '../emitter.service';
+import { MatSliderChange } from '@angular/material';
+
+import {map, sampleTime} from 'rxjs/operators';
 
 @Component({
   selector: 'settings-form',
@@ -10,20 +14,37 @@ export class SettingsFormComponent implements OnInit {
 
   settingsForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  currentValue: number;
+
+  constructor(private fb: FormBuilder, private emitter: EmitterService) {
     this.createForm();
+    this.settingsForm.valueChanges
+    .pipe(map(v => ({
+      target: v.target / 100.0,
+      ps: v.proportional / 100.0,
+      is: v.integral / 100.0,
+      ds: v.derivative / 100.0
+    }))).subscribe(settings => {
+      this.emitter.setTarget(settings.target);
+      this.emitter.setPid(settings);
+    });
+
+    emitter.currentPoints.pipe(
+      map(p => p.data),
+      map(v => Math.trunc(v * 1000)/1000)
+    ).subscribe(value => this.currentValue = value);
   }
 
   ngOnInit() {
+    this.settingsForm.updateValueAndValidity();
   }
 
   createForm() {
     this.settingsForm = this.fb.group({
-      start: [0],
       target: [100],
-      proportional: [25],
-      integral: [25],
-      derivative: [25]
+      proportional: [22],
+      integral: [0],
+      derivative: [0]
     });
   }
 }
