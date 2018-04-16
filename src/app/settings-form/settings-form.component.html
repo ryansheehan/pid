@@ -2,14 +2,14 @@
   <form [formGroup]="settingsForm">
     <div class="settings-form-controls" fxLayout="column" fxLayoutAlign="start start">
       <!-- <button mat-raised-button color="primary" fxFlexAlign="center">Calculate</button> -->
-      <div>{{currentValue}}</div>
-      <h3>Target</h3>
+      <h3>Current (<span>{{currentValue}}</span>)</h3>
+      <h3>Target (<span>{{pid?.currentPidTarget?.target}}</span>)</h3>
       <mat-slider formControlName="target" thumbLabel="true" tickInterval="auto">Target</mat-slider>
-      <h3>Proportional</h3>
+      <h3>Proportional (<span>{{pid?.currentPidTarget?.kp}}</span>)</h3>
       <mat-slider formControlName="proportional" thumbLabel="true" tickInterval="auto">Target</mat-slider>
-      <h3>Integral</h3>
+      <h3>Integral (<span>{{pid?.currentPidTarget?.ki}}</span>)</h3>
       <mat-slider formControlName="integral" thumbLabel="true" tickInterval="auto">Target</mat-slider>
-      <h3>Derivative</h3>
+      <h3>Derivative  (<span>{{pid?.currentPidTarget?.kd}}</span>)</h3>
       <mat-slider formControlName="derivative" thumbLabel="true" tickInterval="auto">Target</mat-slider>
     </div>
   </form>

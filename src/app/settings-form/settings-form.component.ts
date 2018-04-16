@@ -4,6 +4,7 @@ import { EmitterService } from '../emitter.service';
 import { MatSliderChange } from '@angular/material';
 
 import {map, sampleTime} from 'rxjs/operators';
+import { PidService } from '../pid.service';
 
 @Component({
   selector: 'settings-form',
@@ -16,7 +17,7 @@ export class SettingsFormComponent implements OnInit {
 
   currentValue: number;
 
-  constructor(private fb: FormBuilder, private emitter: EmitterService) {
+  constructor(private fb: FormBuilder, public pid: PidService) {
     this.createForm();
     this.settingsForm.valueChanges
     .pipe(map(v => ({
@@ -25,13 +26,23 @@ export class SettingsFormComponent implements OnInit {
       is: v.integral / 100.0,
       ds: v.derivative / 100.0
     }))).subscribe(settings => {
-      this.emitter.setTarget(settings.target);
-      this.emitter.setPid(settings);
+      // this.emitter.setTarget(settings.target);
+      // this.emitter.setPid(settings);
+      pid.setPidTarget({
+        target: settings.target,
+        kp: settings.ps,
+        ki: settings.is,
+        kd: settings.ds
+      });
     });
 
-    emitter.currentPoints.pipe(
-      map(p => p.data),
-      map(v => Math.trunc(v * 1000)/1000)
+    // emitter.currentPoints.pipe(
+    //   map(p => p.data),
+    //   map(v => Math.trunc(v * 1000)/1000)
+    // ).subscribe(value => this.currentValue = value);
+
+    pid.data$.pipe(
+      map(data => Math.trunc(data.current * 1000) / 1000)
     ).subscribe(value => this.currentValue = value);
   }
 
@@ -42,7 +53,7 @@ export class SettingsFormComponent implements OnInit {
   createForm() {
     this.settingsForm = this.fb.group({
       target: [100],
-      proportional: [22],
+      proportional: [25],
       integral: [0],
       derivative: [0]
     });
