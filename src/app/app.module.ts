@@ -16,6 +16,7 @@ import { AppComponent } from './app.component';
 import { SettingsFormComponent } from './settings-form/settings-form.component';
 import { EmitterService } from './emitter.service';
 import { PidChartComponent } from './pid-chart/pid-chart.component';
+import { PidService } from './pid.service';
 
 
 @NgModule({
@@ -36,7 +37,7 @@ import { PidChartComponent } from './pid-chart/pid-chart.component';
     MatInputModule,
     MatFormFieldModule
   ],
-  providers: [EmitterService],
+  providers: [EmitterService, PidService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
