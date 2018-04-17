@@ -36,14 +36,20 @@ export interface IPidTarget {
   kd: number;
 }
 
-export type TransformFn = (last_output: number, last_input: number) => number;
+export type TransformFn = (output: number, input: number, time: number) => number;
 
-const min_i = 0;
-const max_i = 100.0;
+const defaultTransformFn: TransformFn = (function() {
+  const throttle_max = 100;
+  let lastTime = Date.now();
+  let throttle = 0;
 
-const defaultTransformFn: TransformFn = (last_output: number, last_input: number) => {
-  return last_input + last_output ;
-};
+  return (output: number, input: number, time: number) => {
+    const dt = (time - lastTime) / 1000 ;
+
+    lastTime = time;
+    return output + input;
+  };
+})();
 
 @Injectable()
 export class PidService {
@@ -83,7 +89,7 @@ export class PidService {
 
   constructor() {
     const o$ = this.output.pipe(
-      map(o => this.transformFn(this.input, o))
+      map(o => this.transformFn(this.input, o, this.lastTime))
     );
 
     o$.subscribe(v => this.input = v);
